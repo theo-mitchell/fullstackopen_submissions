@@ -17,6 +17,11 @@ const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
+  // const [average, setAverage] = useState(0);
+
+  // const setToAverage = () => {
+  //   return setAverage((good - bad) / (good + bad + average));
+  // }
 
   return (
     <>
@@ -37,6 +42,9 @@ const App = () => {
       <FeedbackDisplay text={'good'} quantity={good}/>
       <FeedbackDisplay text={'neutral'} quantity={neutral}/>
       <FeedbackDisplay text={'bad'} quantity={bad}/>
+      <FeedbackDisplay text={'all'} quantity={good + neutral + bad}/>
+      <FeedbackDisplay text={'average'} quantity={((good - bad) / (good + bad + neutral)) || 0 }/>
+      <FeedbackDisplay text={'positive'} quantity={((good / (good + bad + neutral) * 100) || 0) + '%'}/>
     </>
   );
 };
