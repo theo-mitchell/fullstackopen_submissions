@@ -13,23 +13,32 @@ const FeedbackDisplay = ({ text, quantity }) => {
 };
 
 const Statistics = ({ good, neutral, bad }) => {
-  return (
-    <>
+  if (good <= 0 && bad <=0 && neutral <= 0) {
+    return (
+      <>
       <h1>statistics</h1>
-      <FeedbackDisplay text={"good"} quantity={good} />
-      <FeedbackDisplay text={"neutral"} quantity={neutral} />
-      <FeedbackDisplay text={"bad"} quantity={bad} />
-      <FeedbackDisplay text={"all"} quantity={good + neutral + bad} />
-      <FeedbackDisplay
-        text={"average"}
-        quantity={(good - bad) / (good + bad + neutral) || 0}
-      />
-      <FeedbackDisplay
-        text={"positive"}
-        quantity={((good / (good + bad + neutral)) * 100 || 0) + "%"}
-      />
+      <p>No feedback given</p>
     </>
-  );
+    )
+  } else {
+    return (
+      <>
+        <h1>statistics</h1>
+        <FeedbackDisplay text={"good"} quantity={good} />
+        <FeedbackDisplay text={"neutral"} quantity={neutral} />
+        <FeedbackDisplay text={"bad"} quantity={bad} />
+        <FeedbackDisplay text={"all"} quantity={good + neutral + bad} />
+        <FeedbackDisplay
+          text={"average"}
+          quantity={(good - bad) / (good + bad + neutral) || 0}
+        />
+        <FeedbackDisplay
+          text={"positive"}
+          quantity={((good / (good + bad + neutral)) * 100 || 0) + "%"}
+        />
+      </>
+    );
+  }
 };
 
 const App = () => {
