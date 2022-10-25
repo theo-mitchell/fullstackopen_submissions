@@ -4,10 +4,10 @@ const Button = (props) => {
   return <button onClick={props.onClick}>{props.text}</button>;
 };
 
-const FeedbackDisplay = ({ text, quantity }) => {
+const StatisticLine = ({ text, value }) => {
   return (
     <p>
-      {text} {quantity}
+      {text} {value}
     </p>
   );
 };
@@ -24,17 +24,17 @@ const Statistics = ({ good, neutral, bad }) => {
     return (
       <>
         <h1>statistics</h1>
-        <FeedbackDisplay text={"good"} quantity={good} />
-        <FeedbackDisplay text={"neutral"} quantity={neutral} />
-        <FeedbackDisplay text={"bad"} quantity={bad} />
-        <FeedbackDisplay text={"all"} quantity={good + neutral + bad} />
-        <FeedbackDisplay
+        <StatisticLine text={"good"} value={good} />
+        <StatisticLine text={"neutral"} value={neutral} />
+        <StatisticLine text={"bad"} value={bad} />
+        <StatisticLine text={"all"} value={good + neutral + bad} />
+        <StatisticLine
           text={"average"}
-          quantity={(good - bad) / (good + bad + neutral) || 0}
+          value={(good - bad) / (good + bad + neutral) || 0}
         />
-        <FeedbackDisplay
+        <StatisticLine
           text={"positive"}
-          quantity={((good / (good + bad + neutral)) * 100 || 0) + "%"}
+          value={((good / (good + bad + neutral)) * 100 || 0) + "%"}
         />
       </>
     );
