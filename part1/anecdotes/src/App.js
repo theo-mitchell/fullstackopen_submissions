@@ -1,5 +1,19 @@
 import { useState } from "react";
 
+const TopAnecdote = ({anecdotes, points, indexOfMostPoints}) => {
+  if (indexOfMostPoints != null) {
+    return (
+      <>
+        <h1>Anecdote with most votes</h1>
+        {anecdotes[indexOfMostPoints]|| ''}
+        <br></br>
+        has {points[indexOfMostPoints]} votes
+        <br></br>
+      </>
+    )
+  }
+}
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -14,6 +28,7 @@ const App = () => {
   let [points, setPoints] = useState(new Uint8Array(anecdotes.length));
 
   const [selected, setSelected] = useState(0);
+  const [indexOfMostPoints, setindexOfMostPoints] = useState(null);
 
   const selectRandomAnecdote = (min, max) => {
     // 👇️ get number between min (inclusive) and max (inclusive)
@@ -21,15 +36,25 @@ const App = () => {
   }
 
   const vote = () => {
-    const stateCopy = [...points]
-    stateCopy[selected] += 1 
-    setPoints(stateCopy);
+    const pointsCopy = [...points]
+    pointsCopy[selected] += 1 
+    setPoints(pointsCopy);
+    setindexOfMostPoints(findTopAnecdoteIndex(pointsCopy));
   }
 
-
+  const findTopAnecdoteIndex = (pointsCopy) => {
+    let newindexOfMostPoints = 0;
+    for (let i = 0; i < pointsCopy.length; i++) {
+      if (pointsCopy[i] >= pointsCopy[newindexOfMostPoints]) {
+        newindexOfMostPoints = i;
+      }
+    }
+    return newindexOfMostPoints;
+  }
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <br></br>
       has {points[selected]} votes
@@ -44,6 +69,11 @@ const App = () => {
       >
         next anecdote
       </button>
+      <TopAnecdote 
+        anecdotes={anecdotes}
+        points={points}
+        indexOfMostPoints={indexOfMostPoints}
+      />
     </div>
   );
 };
