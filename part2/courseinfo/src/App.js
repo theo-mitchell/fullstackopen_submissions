@@ -16,15 +16,6 @@ const Part = (props) => {
   );
 };
 
-const Course = (props) => {
-  return (
-    <>
-      <Header course={props.course.name} />
-      <Content parts={props.course.parts} />
-    </>
-  );
-};
-
 const Content = (props) => {
   return (
     <>
@@ -39,6 +30,31 @@ const Content = (props) => {
           );
         })
       }
+    </>
+  );
+};
+
+const Total = ({ total }) => {
+  return (
+    <>
+      <b>total of {total} exercises</b>
+    </>
+  );
+}
+
+const Course = (props) => {
+  const total = props.course.parts
+    .reduce(
+      (previousValue, currentValue) => { 
+        return previousValue + currentValue.exercises;
+      }, 0
+    );
+
+  return (
+    <>
+      <Header course={props.course.name} />
+      <Content parts={props.course.parts} />
+      <Total total={total}/>
     </>
   );
 };
