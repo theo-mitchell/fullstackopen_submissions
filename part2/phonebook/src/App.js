@@ -1,26 +1,43 @@
-import { useState } from 'react'
+import { useState } from "react";
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
-  ]) 
-  const [newName, setNewName] = useState('')
+  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+
+  const [newName, setNewName] = useState('');
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const newPerson = { name: newName };
+    setPersons(persons.concat(newPerson));
+    setNewName('')
+  };
+
+  const handleNameChange = (event) => {
+    setNewName(event.target.value);
+  };
 
   return (
-    <div>
+    <>
       <h2>Phonebook</h2>
-      <form>
+      <div>debug: {newName}</div>
+      <form onSubmit={handleSubmit}>
         <div>
-          name: <input />
+          name:
+          <input value={newName} onChange={handleNameChange} />
         </div>
         <div>
-          <button type="submit">add</button>
+          <input type="submit" value="Submit" />
         </div>
       </form>
       <h2>Numbers</h2>
-      ...
-    </div>
-  )
-}
+      <ul>
+        {persons.map((person) => (
+          <li key={person.name}>{person.name}</li>
+        ))}
+      </ul>
+    </>
+  );
+};
 
-export default App
+export default App;
