@@ -40,8 +40,6 @@ const App = () => {
     };
     const existingNames = persons.map((person) => person.name);
 
-    console.log("new person is dis", newPerson);
-
     if (existingNames.includes(newPerson.name)) {
       alert(`${newPerson.name} is already added to phonebook`);
     } else if (newPerson.name === "") {
