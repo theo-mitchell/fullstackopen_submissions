@@ -1,3 +1,5 @@
+import CountryWeather from "./CountryWeather"; 
+
 const Country = ({ country }) => {
   const getLanguagesListItems = (country) => {
     const content = [];
@@ -24,6 +26,9 @@ const Country = ({ country }) => {
       <ul>{getLanguagesListItems(country)}</ul>
       <div>
         <img src={country.flags.png} alt="flag of selected country"></img>
+      </div>
+      <div>
+        <CountryWeather country={country} />
       </div>
     </>
   );
