@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonDisplay from "./components/PersonDisplay";
 import personsService from "./services/persons";
+import * as uuid from "uuid";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +35,7 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newPhone,
-      id: persons.length + 1,
+      id: uuid.v5(),
     };
     const existingNames = persons.map((person) => person.name);
 
