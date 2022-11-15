@@ -2,28 +2,29 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonDisplay from "./components/PersonDisplay";
-import axios from 'axios'
+import personsService from "./services/persons"
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [persons, setPersons] = useState([]);
-
-  const loadPersons = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then((res) => {
-        setPersons(res.data);
-        setDisplayPersons(res.data);
-      });
-  }
-
-  useEffect(loadPersons, []);
-
-  const [displayPersons, setDisplayPersons] = useState(persons);
+  const [displayPersons, setDisplayPersons] = useState([]);
 
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
+
+  const loadPersons = () => {
+    personsService
+      .getAll()
+      .then((res) => {
+        console.log('Got persons back');
+        // console.table(res);
+        // setPersons(res);
+        // setDisplayPersons(res);
+      });
+  }
+  useEffect(loadPersons, [persons, displayPersons]);
+
 
   const clearForm = () => {
     setNewName("");
@@ -54,7 +55,7 @@ const App = () => {
   const handleSearchQueryChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    updatePersonData(null, query);
+    // updatePersonData(null, query);
   };
 
   const handleNameChange = (event) => {
@@ -66,18 +67,20 @@ const App = () => {
   };
 
   const updatePersonData = (newPerson, query) => {
-    const currentPersons = newPerson ? persons.concat(newPerson) : persons;
-    setPersons(currentPersons);
-
-    if (query) {
-      setDisplayPersons(
-        currentPersons.filter((person) =>
-          person.name.toLowerCase().includes(query)
-        )
-      );
-    } else {
-      setDisplayPersons(currentPersons);
-    }
+    // personsService.saveOrUpdate(newPerson).then((response) => {
+      const currentPersons = newPerson ? persons.concat(newPerson) : persons;
+      setPersons(currentPersons);
+  
+      if (query) {
+        setDisplayPersons(
+          currentPersons.filter((person) =>
+            person.name.toLowerCase().includes(query)
+          )
+        );
+      } else {
+        setDisplayPersons(currentPersons);
+      }
+    // })
   };
 
   return (
