@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonDisplay from "./components/PersonDisplay";
-import personsService from "./services/persons"
+import personsService from "./services/persons";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,17 +14,14 @@ const App = () => {
   const [newPhone, setNewPhone] = useState("");
 
   const loadPersons = () => {
-    personsService
-      .getAll()
-      .then((res) => {
-        console.log('Got persons back');
-        // console.table(res);
-        // setPersons(res);
-        // setDisplayPersons(res);
-      });
-  }
-  useEffect(loadPersons, [persons, displayPersons]);
-
+    personsService.getAll().then((res) => {
+      console.log("Got persons back");
+      console.table(res);
+      setPersons(res);
+      setDisplayPersons(res);
+    });
+  };
+  useEffect(loadPersons, []);
 
   const clearForm = () => {
     setNewName("");
@@ -55,7 +52,7 @@ const App = () => {
   const handleSearchQueryChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    // updatePersonData(null, query);
+    filterDisplayPersons(query);
   };
 
   const handleNameChange = (event) => {
@@ -67,26 +64,31 @@ const App = () => {
   };
 
   const updatePersonData = (newPerson, query) => {
-    // personsService.saveOrUpdate(newPerson).then((response) => {
-      const currentPersons = newPerson ? persons.concat(newPerson) : persons;
+    console.log('here is new person', newPerson)
+    personsService.saveOrUpdate(newPerson).then((response) => {
+      const currentPersons = newPerson ? persons.concat(response) : persons;
+
       setPersons(currentPersons);
-  
       if (query) {
-        setDisplayPersons(
-          currentPersons.filter((person) =>
-            person.name.toLowerCase().includes(query)
-          )
-        );
+        filterDisplayPersons(currentPersons, query);
       } else {
         setDisplayPersons(currentPersons);
       }
-    // })
+    });
+  };
+
+  const filterDisplayPersons = (currentPersons, query) => {
+    const filteredPersons = currentPersons.filter((person) => {
+      return person.name.toLowerCase().includes(query);
+    });
+
+    setDisplayPersons(filteredPersons);
   };
 
   return (
     <>
       <h2>Phonebook</h2>
-      <br/>
+      <br />
       {/* <div>
         debug: {newName} {newPhone}
       </div> */}
@@ -99,7 +101,7 @@ const App = () => {
         phone={newPhone}
         onPhoneChange={handlePhoneChange}
       />
-      <br/>
+      <br />
       <h3>Numbers</h3>
       <PersonDisplay persons={displayPersons} />
     </>

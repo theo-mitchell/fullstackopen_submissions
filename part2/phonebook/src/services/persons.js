@@ -9,7 +9,7 @@ const getAll = () => {
 };
 
 const saveOrUpdate = (person) => {
-  return axios.post(`${dbUrl}/${person.id}`, person).then((response) => {
+  return axios.post(`${dbUrl}`, person).then((response) => {
     console.log(response.data)
     return response.data;
   });
