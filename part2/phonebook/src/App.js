@@ -35,7 +35,7 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newPhone,
-      id: uuid.v5(),
+      id: persons.slice(-1).id + 1,
     };
     const existingNames = persons.map((person) => person.name);
 
@@ -53,7 +53,7 @@ const App = () => {
   const handleSearchQueryChange = (event) => {
     const query = event.target.value;
     setSearchQuery(query);
-    filterDisplayPersons(query);
+    filterDisplayPersons(persons, query);
   };
 
   const handleNameChange = (event) => {
@@ -68,6 +68,8 @@ const App = () => {
     console.log('here is new person', newPerson)
     personsService.saveOrUpdate(newPerson).then((response) => {
       const currentPersons = newPerson ? persons.concat(response) : persons;
+      console.log('current persons is now this');
+      console.table(currentPersons);
 
       setPersons(currentPersons);
       if (query) {
@@ -75,6 +77,9 @@ const App = () => {
       } else {
         setDisplayPersons(currentPersons);
       }
+
+      console.log('display is now this');
+      console.table(displayPersons);
     });
   };
 
@@ -84,6 +89,19 @@ const App = () => {
     });
 
     setDisplayPersons(filteredPersons);
+  };
+
+  const handleDeletion = (id) => {
+    const personToDelete = persons.find((person) => person.id === id);
+    console.log(id);
+    console.log(personToDelete);
+    if (window.confirm(`Do you want to delete ${personToDelete.name}`)) {
+      personsService.deleteById(id).then((res) => {
+        const newPersons = persons.filter((person) => person.id !== id);
+        setPersons(newPersons);
+        filterDisplayPersons(newPersons, searchQuery)
+      });
+    }
   };
 
   return (
@@ -104,7 +122,13 @@ const App = () => {
       />
       <br />
       <h3>Numbers</h3>
-      <PersonDisplay persons={displayPersons} />
+      <ul>
+        {
+          displayPersons.map((person) => {
+            return <PersonDisplay key={person.id} person={person} onPersonDelete={() => handleDeletion(person.id)}/>
+          })
+        }
+      </ul>
     </>
   );
 };

@@ -15,4 +15,10 @@ const saveOrUpdate = (person) => {
   });
 };
 
-export default { getAll, saveOrUpdate };
+const deleteById = (id) => {
+    return axios.delete(`${dbUrl}/${id}`).then((response) => {
+        return response.data;
+    });
+}
+
+export default { getAll, saveOrUpdate, deleteById };
