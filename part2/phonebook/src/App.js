@@ -3,7 +3,6 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonDisplay from "./components/PersonDisplay";
 import personsService from "./services/persons";
-import * as uuid from "uuid";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,12 +34,23 @@ const App = () => {
     const newPerson = {
       name: newName,
       number: newPhone,
-      id: persons.slice(-1).id + 1,
+      id: null,
     };
-    const existingNames = persons.map((person) => person.name);
 
-    if (existingNames.includes(newPerson.name)) {
-      alert(`${newPerson.name} is already added to phonebook`);
+    const existingPersonMatch = 
+      persons.find((person) => {
+        return person.name === newPerson.name
+    });
+
+    if (existingPersonMatch) {
+      if (existingPersonMatch.number !== newPerson.number) {
+        if (window.confirm(`${newPerson.name} is already added, replace the old number with new one?`)) {
+          newPerson.id = existingPersonMatch.id;
+          updatePersonData(newPerson, searchQuery);
+        }
+      } else {
+        alert(`${newPerson.name} is already added to phonebook`);
+      }
     } else if (newPerson.name === "") {
       alert(`name cannot be left blank`);
     } else {
@@ -65,21 +75,23 @@ const App = () => {
   };
 
   const updatePersonData = (newPerson, query) => {
-    console.log('here is new person', newPerson)
     personsService.saveOrUpdate(newPerson).then((response) => {
-      const currentPersons = newPerson ? persons.concat(response) : persons;
-      console.log('current persons is now this');
-      console.table(currentPersons);
-
+      let currentPersons;
+      if (newPerson.id) {
+        currentPersons = persons.filter((person) => person.id !== newPerson.id);
+        console.log('filtered our guy');
+        console.table(currentPersons);
+      } else {
+        currentPersons = persons;
+      }
+      currentPersons = currentPersons.concat(response);
+      console.log('this is with response', currentPersons);
       setPersons(currentPersons);
       if (query) {
         filterDisplayPersons(currentPersons, query);
       } else {
         setDisplayPersons(currentPersons);
       }
-
-      console.log('display is now this');
-      console.table(displayPersons);
     });
   };
 
@@ -93,8 +105,7 @@ const App = () => {
 
   const handleDeletion = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
-    console.log(id);
-    console.log(personToDelete);
+
     if (window.confirm(`Do you want to delete ${personToDelete.name}`)) {
       personsService.deleteById(id).then((res) => {
         const newPersons = persons.filter((person) => person.id !== id);

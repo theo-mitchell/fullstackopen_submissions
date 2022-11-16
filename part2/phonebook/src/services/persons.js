@@ -1,4 +1,6 @@
 import axios from "axios";
+import * as uuid from "uuid";
+
 const dbUrl = "http://localhost:3000/persons";
 
 const getAll = () => {
@@ -9,7 +11,16 @@ const getAll = () => {
 };
 
 const saveOrUpdate = (person) => {
-  return axios.post(`${dbUrl}`, person).then((response) => {
+
+  if (person.id) {
+    return axios.put(`${dbUrl}/${person.id}`, person).then((response) => {
+      console.log("PUT");
+      console.log(response.data);
+      return response.data;
+    });
+  }
+
+  return axios.post(`${dbUrl}`, {...person, id: uuid.v4}).then((response) => {
     console.log(response.data)
     return response.data;
   });
