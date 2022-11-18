@@ -124,7 +124,9 @@ const App = () => {
           setPersons(newPersons);
           filterDisplayPersons(newPersons, searchQuery);
         })
-        .catch(() => {
+        .catch((err) => {
+          console.log('i am in catch')
+          console.table(err)
           // TODO Remove deleted person from array
           setNotificationMessage({
             displayText: `${personToDelete.name} has already been deleted`,
