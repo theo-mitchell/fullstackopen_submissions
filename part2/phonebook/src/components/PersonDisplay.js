@@ -6,7 +6,12 @@ const PersonDisplay = ({ person, onPersonDelete }) => {
     return (
       <li key={person.id}>
         {person.name} {person.number}
-        <button key={person.id+"btn"} onClick={() => onPersonDelete(person.id)}>delete</button>
+        <button
+          key={person.id + "btn"}
+          onClick={() => onPersonDelete(person.id)}
+        >
+          delete
+        </button>
       </li>
     );
   }

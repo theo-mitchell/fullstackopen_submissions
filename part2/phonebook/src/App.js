@@ -3,6 +3,7 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import PersonDisplay from "./components/PersonDisplay";
 import personsService from "./services/persons";
+import PersonNotification from "./components/PersonNotification";
 
 const App = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,11 +13,10 @@ const App = () => {
 
   const [newName, setNewName] = useState("");
   const [newPhone, setNewPhone] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   const loadPersons = () => {
     personsService.getAll().then((res) => {
-      console.log("Got persons back");
-      console.table(res);
       setPersons(res);
       setDisplayPersons(res);
     });
@@ -37,14 +37,17 @@ const App = () => {
       id: null,
     };
 
-    const existingPersonMatch = 
-      persons.find((person) => {
-        return person.name === newPerson.name
+    const existingPersonMatch = persons.find((person) => {
+      return person.name === newPerson.name;
     });
 
     if (existingPersonMatch) {
       if (existingPersonMatch.number !== newPerson.number) {
-        if (window.confirm(`${newPerson.name} is already added, replace the old number with new one?`)) {
+        if (
+          window.confirm(
+            `${newPerson.name} is already added, replace the old number with new one?`
+          )
+        ) {
           newPerson.id = existingPersonMatch.id;
           updatePersonData(newPerson, searchQuery);
         }
@@ -79,19 +82,26 @@ const App = () => {
       let currentPersons;
       if (newPerson.id) {
         currentPersons = persons.filter((person) => person.id !== newPerson.id);
-        console.log('filtered our guy');
-        console.table(currentPersons);
       } else {
         currentPersons = persons;
       }
       currentPersons = currentPersons.concat(response);
-      console.log('this is with response', currentPersons);
+
       setPersons(currentPersons);
       if (query) {
         filterDisplayPersons(currentPersons, query);
       } else {
         setDisplayPersons(currentPersons);
       }
+
+      setNotificationMessage({
+        displayText: `Added ${newPerson.name}`,
+        isError: false,
+      });
+
+      setTimeout(() => {
+        setNotificationMessage(null);
+      }, 5000);
     });
   };
 
@@ -107,11 +117,23 @@ const App = () => {
     const personToDelete = persons.find((person) => person.id === id);
 
     if (window.confirm(`Do you want to delete ${personToDelete.name}`)) {
-      personsService.deleteById(id).then((res) => {
-        const newPersons = persons.filter((person) => person.id !== id);
-        setPersons(newPersons);
-        filterDisplayPersons(newPersons, searchQuery)
-      });
+      personsService
+        .deleteById(id)
+        .then((res) => {
+          const newPersons = persons.filter((person) => person.id !== id);
+          setPersons(newPersons);
+          filterDisplayPersons(newPersons, searchQuery);
+        })
+        .catch(() => {
+          // TODO Remove deleted person from array
+          setNotificationMessage({
+            displayText: `${personToDelete.name} has already been deleted`,
+            isError: true,
+          });
+          setTimeout(() => {
+            setNotificationMessage(null);
+          }, 5000);
+        });
     }
   };
 
@@ -122,6 +144,7 @@ const App = () => {
       {/* <div>
         debug: {newName} {newPhone}
       </div> */}
+      <PersonNotification message={notificationMessage} />
       <Filter value={searchQuery} onChange={handleSearchQueryChange} />
       <h3>Add a new</h3>
       <PersonForm
@@ -134,11 +157,15 @@ const App = () => {
       <br />
       <h3>Numbers</h3>
       <ul>
-        {
-          displayPersons.map((person) => {
-            return <PersonDisplay key={person.id} person={person} onPersonDelete={() => handleDeletion(person.id)}/>
-          })
-        }
+        {displayPersons.map((person) => {
+          return (
+            <PersonDisplay
+              key={person.id}
+              person={person}
+              onPersonDelete={() => handleDeletion(person.id)}
+            />
+          );
+        })}
       </ul>
     </>
   );
