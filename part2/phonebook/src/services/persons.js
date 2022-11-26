@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as uuid from "uuid";
 
-const dbUrl = "http://localhost:3000/persons";
+const dbUrl = "/api/persons";
 
 const getAll = () => {
   return axios.get(dbUrl).then((response) => {
