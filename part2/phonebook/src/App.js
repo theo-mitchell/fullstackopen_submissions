@@ -33,7 +33,7 @@ const App = () => {
 
     const newPerson = {
       name: newName,
-      number: newPhone,
+      phone: newPhone,
       id: null,
     };
 
@@ -42,7 +42,7 @@ const App = () => {
     });
 
     if (existingPersonMatch) {
-      if (existingPersonMatch.number !== newPerson.number) {
+      if (existingPersonMatch.phone !== newPerson.phone) {
         if (
           window.confirm(
             `${newPerson.name} is already added, replace the old number with new one?`
