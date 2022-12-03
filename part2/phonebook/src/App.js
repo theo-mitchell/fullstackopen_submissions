@@ -115,6 +115,7 @@ const App = () => {
 
   const handleDeletion = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
+    console.log('here is person to delete', personToDelete);
 
     if (window.confirm(`Do you want to delete ${personToDelete.name}`)) {
       personsService
