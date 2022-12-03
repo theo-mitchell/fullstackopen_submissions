@@ -5,7 +5,6 @@ const dbUrl = "/api/persons";
 
 const getAll = () => {
   return axios.get(dbUrl).then((response) => {
-    console.log(response.data);
     return response.data;
   });
 };
@@ -13,24 +12,17 @@ const getAll = () => {
 const saveOrUpdate = (person) => {
   if (person.id) {
     return axios.put(`${dbUrl}/${person.id}`, person).then((response) => {
-      console.log("PUT");
-      console.log(response.data);
       return response.data;
     });
   }
 
   return axios.post(`${dbUrl}`, { ...person, id: uuid.v4 }).then((response) => {
-    console.log(response);
-    console.log(response.data);
     return response.data;
   });
 };
 
 const deleteById = (id) => {
-  console.log(`${dbUrl}/${id}`);
-  console.log('!!!');
   return axios.delete(`${dbUrl}/${id}`).then((response) => {
-    console.log(response);
     return response.data;
   });
 };

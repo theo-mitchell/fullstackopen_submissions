@@ -144,9 +144,6 @@ const App = () => {
     <>
       <h2>Phonebook</h2>
       <br />
-      {/* <div>
-        debug: {newName} {newPhone}
-      </div> */}
       <PersonNotification message={notificationMessage} />
       <Filter value={searchQuery} onChange={handleSearchQueryChange} />
       <h3>Add a new</h3>
