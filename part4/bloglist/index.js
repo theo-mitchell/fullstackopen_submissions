@@ -4,15 +4,7 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv-flow").config();
-
-const blogSchema = new mongoose.Schema({
-  title: String,
-  author: String,
-  url: String,
-  likes: Number,
-});
-
-const Blog = mongoose.model("Blog", blogSchema);
+const Blog = require("./models/blog")
 
 const login = encodeURIComponent(process.env.MONGODB_LOGIN);
 const password = encodeURIComponent(process.env.MONGODB_PASSWORD);
