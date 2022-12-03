@@ -12,7 +12,7 @@ const PersonForm = ({onSubmit, name, onNameChange, phone, onPhoneChange }) => {
             type="tel"
             value={phone}
             onChange={onPhoneChange}
-            placeholder="123-456-6789"
+            placeholder="123-4566789"
           />
         </div>
         <div>
