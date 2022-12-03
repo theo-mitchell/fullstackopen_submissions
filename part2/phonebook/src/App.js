@@ -78,31 +78,32 @@ const App = () => {
   };
 
   const updatePersonData = (newPerson, query) => {
-    personsService.saveOrUpdate(newPerson).then((response) => {
-      let currentPersons;
-      if (newPerson.id) {
-        currentPersons = persons.filter((person) => person.id !== newPerson.id);
-      } else {
-        currentPersons = persons;
-      }
-      currentPersons = currentPersons.concat(response);
+    personsService
+      .saveOrUpdate(newPerson)
+      .then((response) => {
+        let currentPersons;
+        if (newPerson.id) {
+          currentPersons = persons.filter(
+            (person) => person.id !== newPerson.id
+          );
+        } else {
+          currentPersons = persons;
+        }
+        currentPersons = currentPersons.concat(response);
 
-      setPersons(currentPersons);
-      if (query) {
-        filterDisplayPersons(currentPersons, query);
-      } else {
-        setDisplayPersons(currentPersons);
-      }
+        setPersons(currentPersons);
+        if (query) {
+          filterDisplayPersons(currentPersons, query);
+        } else {
+          setDisplayPersons(currentPersons);
+        }
 
-      setNotificationMessage({
-        displayText: `Added ${newPerson.name}`,
-        isError: false,
+        displayNotification(`Added ${newPerson.name}`, false);
+      })
+      .catch((error) => {
+        console.log('FRONTEND CATCH!');
+        displayNotification(error.response.data.error, true);
       });
-
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
-    });
   };
 
   const filterDisplayPersons = (currentPersons, query) => {
@@ -115,7 +116,7 @@ const App = () => {
 
   const handleDeletion = (id) => {
     const personToDelete = persons.find((person) => person.id === id);
-    console.log('here is person to delete', personToDelete);
+    console.log("here is person to delete", personToDelete);
 
     if (window.confirm(`Do you want to delete ${personToDelete.name}`)) {
       personsService
@@ -126,18 +127,26 @@ const App = () => {
           filterDisplayPersons(newPersons, searchQuery);
         })
         .catch((err) => {
-          console.log('i am in catch')
-          console.table(err)
+          console.log("i am in catch");
+          console.table(err);
           // TODO Remove deleted person from array
-          setNotificationMessage({
-            displayText: `${personToDelete.name} has already been deleted`,
-            isError: true,
-          });
-          setTimeout(() => {
-            setNotificationMessage(null);
-          }, 5000);
+          displayNotification(
+            `${personToDelete.name} has already been deleted`,
+            true
+          );
         });
     }
+  };
+
+  const displayNotification = (text, isError) => {
+    setNotificationMessage({
+      displayText: text,
+      isError,
+    });
+
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 5000);
   };
 
   return (
