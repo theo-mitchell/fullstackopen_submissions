@@ -1,5 +1,11 @@
 const blogRouter = require("express").Router();
 const Blog = require("../models/blog");
+const middleware = require("../utils/middleware");
+
+blogRouter.all("/", (request, response, next) => {
+  middleware.requestLogger(request);
+  next();
+});
 
 blogRouter.get("/", (request, response) => {
   Blog.find({}).then((blogs) => {
@@ -16,9 +22,14 @@ blogRouter.post("/", (request, response) => {
     likes: body.likes,
   });
 
-  blog.save().then((result) => {
-    response.status(201).json(result);
-  });
+  blog
+    .save()
+    .then((result) => {
+      response.status(201).json(result);
+    })
+    .catch((error) => {
+      middleware.errorHandler(error);
+    });
 });
 
 module.exports = blogRouter;
