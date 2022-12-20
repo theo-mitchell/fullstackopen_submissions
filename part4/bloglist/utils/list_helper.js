@@ -26,27 +26,33 @@ const favoriteBlog = (blogs) => {
     : {};
 };
 
-const mostBlogs = (blogs) => {
-  let blogsHashMap = _.reduce(
-    blogs,
-    (accumulator, value) => {
-      const key = value["author"];
+// const mostBlogs = (blogs) => {
+//   let blogsHashMap = _.reduce(
+//     blogs,
+//     (accumulator, value) => {
+//       const key = value["author"];
 
-      if (accumulator[key]) {
-        accumulator[key] = accumulator[key] + 1;
-      } else {
-        accumulator[key] = 1;
-      }
+//       if (accumulator[key]) {
+//         accumulator[key].blogs = accumulator[key].blogs + 1;
+//       } else {
+//         accumulator[key].blogs = 1;
+//       }
 
-      return accumulator;
-    },
-    {}
-  );
-};
+//       return accumulator;
+//     },
+//     {}
+//   );
+
+//   let userWithMostBlogs = _.find(mostBlogs, (prev, current) => {
+//     return prev > current ? false : true;
+//   });
+
+//   return userWithMostBlogs;
+// };
 
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs,
+  // mostBlogs,
 };
