@@ -21,10 +21,4 @@ const initialBlogs = [
   },
 ];
 
-const getAllblogsInDB = () => {
-  const blogs = Blog.find({}).then((res) => {
-    return res.map((blog) => blog.toJSON());
-  });
-};
-
-module.exports = { initialBlogs, getAllblogsInDB };
+module.exports = { initialBlogs };
