@@ -10,5 +10,4 @@ const TEST_URI = `mongodb+srv://${login}:${password}@cluster0.wvoz7g2.mongodb.ne
 
 const MONGODB_URI = process.env.NODE_ENV === "test" ? TEST_URI : URI;
 
-
 module.exports = { MONGODB_URI, PORT };
