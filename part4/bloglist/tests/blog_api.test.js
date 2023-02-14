@@ -33,12 +33,13 @@ test("making a POST request correctly adds a blog entry", async () => {
     likes: 696969,
   };
 
-  await api.post("/api/blogs").send(testEntry).expect(201);
+  await api
+    .post("/api/blogs")
+    .send(testEntry)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
 
   const blogs = await api.get("/api/blogs");
-
-  console.log("!!!!!!BLOGS first test");
-  console.log(blogs.body);
 
   expect(blogs.body.length === initialNumbderOfBlogs + 1);
 });
@@ -58,7 +59,4 @@ test("if the likes property is not supplied, value will be defaulted to 0", asyn
     .expect("Content-Type", /application\/json/);
 
   const blogs = await api.get("/api/blogs");
-
-  console.log("!!!!!!BLOGS");
-  console.log(blogs.body);
 });
