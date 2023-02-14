@@ -49,7 +49,6 @@ test("if the likes property is not supplied, value will be defaulted to 0", asyn
     title: "Rabble Rabble",
     author: "Test Author",
     url: "https://www.no4567.com",
-    likes: 2313123,
   };
 
   await api
@@ -59,4 +58,7 @@ test("if the likes property is not supplied, value will be defaulted to 0", asyn
     .expect("Content-Type", /application\/json/);
 
   const blogs = await api.get("/api/blogs");
+  const postedTestEntry = blogs.body.slice(-1).pop();
+  expect(postedTestEntry.likes).toEqual(0);
+  console.log(postedTestEntry);
 });
