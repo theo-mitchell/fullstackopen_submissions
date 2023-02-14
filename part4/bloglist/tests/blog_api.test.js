@@ -26,15 +26,39 @@ test("unique identifier of a blog post is a property named id", async () => {
 
 test("making a POST request correctly adds a blog entry", async () => {
   const initialNumbderOfBlogs = testHelper.initialBlogs.length;
-  const testEntry = new Blog({
+  const testEntry = {
     title: "OH NO, NOT A POST TEST",
     author: "AUTHOR TWO",
     url: "https://www.no2.com",
     likes: 696969,
-  });
+  };
 
   await api.post("/api/blogs").send(testEntry).expect(201);
 
   const blogs = await api.get("/api/blogs");
+
+  console.log("!!!!!!BLOGS first test");
+  console.log(blogs.body);
+
   expect(blogs.body.length === initialNumbderOfBlogs + 1);
+});
+
+test("if the likes property is not supplied, value will be defaulted to 0", async () => {
+  const testEntry = {
+    title: "Rabble Rabble",
+    author: "Test Author",
+    url: "https://www.no4567.com",
+    likes: 2313123,
+  };
+
+  await api
+    .post("/api/blogs")
+    .send(testEntry)
+    .expect(201)
+    .expect("Content-Type", /application\/json/);
+
+  const blogs = await api.get("/api/blogs");
+
+  console.log("!!!!!!BLOGS");
+  console.log(blogs.body);
 });
