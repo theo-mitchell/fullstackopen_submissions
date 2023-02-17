@@ -22,17 +22,13 @@ blogRouter.post("/", async (request, response) => {
     likes: body.likes || 0,
   });
 
-  const savedBlog = await blog.save();
-  response.status(201).json(savedBlog);
-
-  // blog
-  //   .save()
-  //   .then((result) => {
-  //     response.status(201).json(result);
-  //   })
-  //   .catch((error) => {
-  //     middleware.errorHandler(error);
-  //   });
+  if (blog.url == null || blog.title == null) {
+    // console.log("wew lad");
+    response.sendStatus(400);
+  } else {
+    const savedBlog = await blog.save();
+    response.status(201).json(savedBlog);
+  }
 });
 
 module.exports = blogRouter;

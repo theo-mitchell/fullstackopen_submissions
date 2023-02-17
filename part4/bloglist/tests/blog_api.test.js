@@ -60,5 +60,17 @@ test("if the likes property is not supplied, value will be defaulted to 0", asyn
   const blogs = await api.get("/api/blogs");
   const postedTestEntry = blogs.body.slice(-1).pop();
   expect(postedTestEntry.likes).toEqual(0);
-  console.log(postedTestEntry);
+});
+
+test("If a blog does not contain a title or url, it will not be saved and server will respond with 400", async () => {
+  const titleMissingTestEntry = {
+    author: "Test for TITLE missing",
+    url: "https://www.notitle.com",
+  };
+
+  await api.post("/api/blogs").send(titleMissingTestEntry).expect(400);
+});
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });
