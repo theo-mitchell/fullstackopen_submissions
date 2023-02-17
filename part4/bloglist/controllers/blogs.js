@@ -23,7 +23,6 @@ blogRouter.post("/", async (request, response) => {
   });
 
   if (blog.url == null || blog.title == null) {
-    // console.log("wew lad");
     response.sendStatus(400);
   } else {
     const savedBlog = await blog.save();
