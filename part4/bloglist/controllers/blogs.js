@@ -1,11 +1,12 @@
 const blogRouter = require("express").Router();
+const { request, response } = require("express");
 const Blog = require("../models/blog");
 const middleware = require("../utils/middleware");
 
-blogRouter.all("/", (request, response, next) => {
-  middleware.requestLogger(request);
-  next();
-});
+// blogRouter.all("/", (request, response, next) => {
+//   middleware.requestLogger(request);
+//   next();
+// });
 
 blogRouter.get("/", (request, response) => {
   Blog.find({}).then((blogs) => {
@@ -28,6 +29,11 @@ blogRouter.post("/", async (request, response) => {
     const savedBlog = await blog.save();
     response.status(201).json(savedBlog);
   }
+});
+
+blogRouter.delete("/:id", async (request, response) => {
+  await Blog.findByIdAndRemove(request.params.id);
+  response.status(204).end();
 });
 
 module.exports = blogRouter;

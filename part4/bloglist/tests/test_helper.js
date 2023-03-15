@@ -2,7 +2,7 @@ const Blog = require("../models/blog");
 
 const initialBlogs = [
   {
-    title: "OH NO",
+    title: "MEOW MEOW",
     author: "AUTHOR ONE",
     url: "https://www.no.com",
     likes: 999,
@@ -21,4 +21,15 @@ const initialBlogs = [
   },
 ];
 
-module.exports = { initialBlogs };
+const blogsInDb = async () => {
+  const allBlogs = await Blog.find({});
+  const jsonBlogs = [];
+
+  for (const blog of allBlogs) {
+    jsonBlogs.push(blog.toJSON());
+  }
+
+  return jsonBlogs;
+};
+
+module.exports = { initialBlogs, blogsInDb };

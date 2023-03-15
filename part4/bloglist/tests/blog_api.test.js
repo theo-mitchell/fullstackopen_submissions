@@ -1,17 +1,13 @@
-const testHelper = require("./test_helper");
+const mongoose = require("mongoose");
 const supertest = require("supertest");
 const app = require("../app");
 const api = supertest(app);
-const mongoose = require("mongoose");
 const Blog = require("../models/blog");
+const testHelper = require("./test_helper");
 
 beforeEach(async () => {
   await Blog.deleteMany({});
-
-  for (let blog of testHelper.initialBlogs) {
-    blogObject = new Blog(blog);
-    await blogObject.save();
-  }
+  await Blog.insertMany(testHelper.initialBlogs);
 });
 
 test("requesting all blogs returns correct amount of records", async () => {
@@ -69,6 +65,25 @@ test("If a blog does not contain a title or url, it will not be saved and server
   };
 
   await api.post("/api/blogs").send(titleMissingTestEntry).expect(400);
+});
+
+describe("blog entry deletion", () => {
+  test("a blog with a valid id will be deleted", async () => {
+    const blogsAtStart = await testHelper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+
+    const blogsAtEnd = await testHelper.blogsInDb();
+
+    expect(blogsAtEnd.length).toEqual(blogsAtStart.length - 1);
+
+    const titles = blogsAtEnd.map((blog) => {
+      return blog.title;
+    });
+
+    expect(titles).not.toContain(blogToDelete.title);
+  });
 });
 
 afterAll(async () => {
