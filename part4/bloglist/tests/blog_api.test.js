@@ -86,6 +86,25 @@ describe("blog entry deletion", () => {
   });
 });
 
+describe("blog entry updates", () => {
+  test("a PUT request with a valid id will update its corresponding blog", async () => {
+    const blogsAtStart = await testHelper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    const likesTestValue = 420;
+    blogToUpdate.likes = likesTestValue;
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blogToUpdate)
+      .expect(200);
+
+    const updatedBlog = (await api.get(`/api/blogs/${blogToUpdate.id}`)).body;
+
+    expect(updatedBlog.likes).toEqual(likesTestValue);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
