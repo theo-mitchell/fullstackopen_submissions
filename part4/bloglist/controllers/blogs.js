@@ -3,10 +3,10 @@ const { request, response } = require("express");
 const Blog = require("../models/blog");
 const middleware = require("../utils/middleware");
 
-// blogRouter.all("/", (request, response, next) => {
-//   middleware.requestLogger(request);
-//   next();
-// });
+blogRouter.all("/", (request, response, next) => {
+  middleware.requestLogger(request);
+  next();
+});
 
 blogRouter.get("/", (request, response) => {
   Blog.find({}).then((blogs) => {
