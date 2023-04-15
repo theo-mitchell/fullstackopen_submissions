@@ -6,6 +6,7 @@ const config = require("./utils/config");
 const middleware = require("./utils/middleware");
 
 app.use(cors());
+app.use(express.static("build"));
 app.use(express.json());
 
 const blogsRouter = require("./controllers/blogs");

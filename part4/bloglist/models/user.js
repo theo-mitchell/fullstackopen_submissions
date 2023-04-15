@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
     minLength: [3, "Username needs to be at least 3 characters long"]
   },
   name: String,
-  passwordHash: { type: String, required: true },
+  passwordHash: String,
 });
 
 userSchema.set("toJSON", {
