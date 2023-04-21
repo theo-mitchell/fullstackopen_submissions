@@ -9,6 +9,9 @@ app.use(cors());
 app.use(express.static("build"));
 app.use(express.json());
 
+const loginRouter = require("./controllers/login");
+app.use("/api/login", loginRouter);
+
 const blogsRouter = require("./controllers/blogs");
 app.use("/api/blogs", blogsRouter);
 
