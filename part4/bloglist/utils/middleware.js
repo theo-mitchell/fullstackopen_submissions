@@ -7,6 +7,17 @@ const requestLogger = (request, response, next) => {
   logger.info("---");
 };
 
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get("authorization");
+
+  if (authorization && authorization.startsWith("Bearer ")) {
+    const token = authorization.replace("Bearer ", "");
+    request.token = token;
+  }
+
+  next();
+};
+
 const unknownEndpoint = (request, response, next) => {
   response.status(404).send({ error: "unknown endpoint" });
 };
@@ -17,14 +28,14 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === "CastError") {
     return response.status(400).send({ error: "malformatted id" });
   } else if (error.name === "ValidationError") {
-    // return response.status(400).json({ error: error.message });
-    return "oh my fucking god"
+    return response.status(400).json({ error: error.message });
   }
 
   next(error);
 };
 
 module.exports = {
+  tokenExtractor,
   requestLogger,
   unknownEndpoint,
   errorHandler,

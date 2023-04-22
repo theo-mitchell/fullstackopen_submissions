@@ -5,18 +5,6 @@ const User = require("../models/user");
 const middleware = require("../utils/middleware");
 const jwt = require("jsonwebtoken");
 
-const getTokenFrom = (request) => {
-  const authorization = request.get("authorization");
-
-  console.log(authorization, "<<<< authorization");
-
-  if (authorization && authorization.startsWith("Bearer ")) {
-    return authorization.replace("Bearer ", "");
-  }
-
-  return null;
-};
-
 blogRouter.all("/", (request, response, next) => {
   middleware.requestLogger(request);
   next();
@@ -43,8 +31,7 @@ blogRouter.get("/:id", async (request, response) => {
 
 blogRouter.post("/", async (request, response) => {
   const body = request.body;
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
-  console.log("decoded token>>>>>", decodedToken);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
 
   if (!decodedToken.id) {
     return response
@@ -53,8 +40,6 @@ blogRouter.post("/", async (request, response) => {
   }
 
   const user = await User.findById(decodedToken.id);
-
-  console.log(user);
 
   const blog = new Blog({
     title: body.title,
@@ -65,16 +50,9 @@ blogRouter.post("/", async (request, response) => {
   });
 
   if (blog.url == null || blog.title == null) {
-    console.log("i am somehow here");
     response.status(400).end();
   } else {
     const savedBlog = await blog.save();
-
-    console.table(savedBlog.toJSON());
-
-    // if (!user.blogs) {
-    //   user.blogs = [];
-    // }
 
     user.blogs = user.blogs.concat(savedBlog._id);
     await user.save();

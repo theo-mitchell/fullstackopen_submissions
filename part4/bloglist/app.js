@@ -9,6 +9,8 @@ app.use(cors());
 app.use(express.static("build"));
 app.use(express.json());
 
+app.use(middleware.tokenExtractor);
+
 const loginRouter = require("./controllers/login");
 app.use("/api/login", loginRouter);
 
