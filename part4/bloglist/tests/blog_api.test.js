@@ -154,5 +154,6 @@ describe("blog entry updates", () => {
 });
 
 afterAll(async () => {
+  console.log("goodbye, space cowboy");
   await mongoose.connection.close();
 });
