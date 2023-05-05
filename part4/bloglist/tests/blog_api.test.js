@@ -1,9 +1,35 @@
 const mongoose = require("mongoose");
 const supertest = require("supertest");
+const bcrypt = require("bcrypt");
 const app = require("../app");
 const api = supertest(app);
 const Blog = require("../models/blog");
+const User = require("../models/user");
 const testHelper = require("./test_helper");
+
+let token = null;
+
+beforeAll(async () => {
+  await User.deleteMany({});
+
+  const userData = {
+    username: "nonononono",
+    name: "nonononono",
+    password: "yesssss",
+  };
+
+  const passwordHash = await bcrypt.hash(userData.password, 10);
+
+  const user = new User({ username: userData.username, passwordHash });
+  await user.save();
+
+  const loginResponse = await api.post("/api/login").send({
+    username: userData.username,
+    password: userData.password,
+  });
+
+  token = loginResponse.body.token;
+});
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -31,6 +57,7 @@ test("making a POST request correctly adds a blog entry", async () => {
 
   await api
     .post("/api/blogs")
+    .auth(token, { type: "bearer" })
     .send(testEntry)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -49,6 +76,7 @@ test("if the likes property is not supplied, value will be defaulted to 0", asyn
 
   await api
     .post("/api/blogs")
+    .auth(token, { type: "bearer" })
     .send(testEntry)
     .expect(201)
     .expect("Content-Type", /application\/json/);
@@ -64,15 +92,35 @@ test("If a blog does not contain a title or url, it will not be saved and server
     url: "https://www.notitle.com",
   };
 
-  await api.post("/api/blogs").send(titleMissingTestEntry).expect(400);
+  await api
+    .post("/api/blogs")
+    .auth(token, { type: "bearer" })
+    .send(titleMissingTestEntry)
+    .expect(400);
 });
 
 describe("blog entry deletion", () => {
   test("a blog with a valid id will be deleted", async () => {
-    const blogsAtStart = await testHelper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const testBlogEntry = {
+      author: "Testytest",
+      url: "https://www.notitle.com",
+      title: "WELL HELLO",
+    };
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const blogToDeleteResponse = await api
+      .post("/api/blogs")
+      .auth(token, { type: "bearer" })
+      .send(testBlogEntry)
+      .expect(201);
+
+    const blogToDeleteId = blogToDeleteResponse.body.id;
+
+    const blogsAtStart = await testHelper.blogsInDb();
+
+    await api
+      .delete(`/api/blogs/${blogToDeleteId}`)
+      .auth(token, { type: "bearer" })
+      .expect(204);
 
     const blogsAtEnd = await testHelper.blogsInDb();
 
@@ -82,7 +130,7 @@ describe("blog entry deletion", () => {
       return blog.title;
     });
 
-    expect(titles).not.toContain(blogToDelete.title);
+    expect(titles).not.toContain(testBlogEntry.title);
   });
 });
 

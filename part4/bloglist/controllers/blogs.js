@@ -3,7 +3,6 @@ const { request, response } = require("express");
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const middleware = require("../utils/middleware");
-const jwt = require("jsonwebtoken");
 const blog = require("../models/blog");
 
 blogRouter.all("/", (request, response, next) => {
@@ -93,8 +92,12 @@ blogRouter.delete(
     const requesterId = request.user;
 
     const blogToDelete = await Blog.findById(request.params.id);
+    console.log(blogToDelete);
 
-    if (blogToDelete.createdBy.toString() === requesterId) {
+    if (
+      blogToDelete.createdBy.toString() === requesterId ||
+      !blogToDelete.createdBy
+    ) {
       await Blog.deleteOne({ _id: blogToDelete.id });
       return response.status(204).end();
     }
