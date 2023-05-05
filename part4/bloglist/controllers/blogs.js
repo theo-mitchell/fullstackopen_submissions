@@ -4,6 +4,7 @@ const Blog = require("../models/blog");
 const User = require("../models/user");
 const middleware = require("../utils/middleware");
 const jwt = require("jsonwebtoken");
+const blog = require("../models/blog");
 
 blogRouter.all("/", (request, response, next) => {
   middleware.requestLogger(request);
@@ -29,36 +30,41 @@ blogRouter.get("/:id", async (request, response) => {
   }
 });
 
-blogRouter.post("/", async (request, response) => {
-  const body = request.body;
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+blogRouter.post(
+  "/",
+  middleware.tokenExtractor,
+  middleware.userExtractor,
+  async (request, response) => {
+    const requesterId = request.user;
+    const body = request.body;
 
-  if (!decodedToken.id) {
-    return response
-      .status(401)
-      .json({ error: "authenticaton failed: invalid token" });
+    if (!requesterId) {
+      return response
+        .status(401)
+        .json({ error: "authenticaton failed: invalid token" });
+    }
+
+    const user = await User.findById(requesterId);
+
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes || 0,
+      createdBy: user._id,
+    });
+
+    if (blog.url == null || blog.title == null) {
+      response.status(400).end();
+    } else {
+      const savedBlog = await blog.save();
+
+      user.blogs = user.blogs.concat(savedBlog._id);
+      await user.save();
+      response.status(201).json(savedBlog);
+    }
   }
-
-  const user = await User.findById(decodedToken.id);
-
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes || 0,
-    createdBy: user._id,
-  });
-
-  if (blog.url == null || blog.title == null) {
-    response.status(400).end();
-  } else {
-    const savedBlog = await blog.save();
-
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
-    response.status(201).json(savedBlog);
-  }
-});
+);
 
 blogRouter.put("/:id", async (request, response) => {
   const body = request.body;
@@ -79,20 +85,24 @@ blogRouter.put("/:id", async (request, response) => {
   response.json(updatedBlog);
 });
 
-blogRouter.delete("/:id", async (request, response) => {
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  const requesterId = decodedToken.id.toString();
+blogRouter.delete(
+  "/:id",
+  middleware.tokenExtractor,
+  middleware.userExtractor,
+  async (request, response) => {
+    const requesterId = request.user;
 
-  const blogToDelete = await Blog.findById(request.params.id);
+    const blogToDelete = await Blog.findById(request.params.id);
 
-  if (blogToDelete.createdBy.toString() === requesterId) {
-    blogToDelete.deleteOne;
-    response.status(204).end();
+    if (blogToDelete.createdBy.toString() === requesterId) {
+      await Blog.deleteOne({ _id: blogToDelete.id });
+      return response.status(204).end();
+    }
+
+    response
+      .status(401)
+      .json({ error: "you are not authorized to delete this blog post" });
   }
-
-  response
-    .status(401)
-    .json({ error: "you are not authorized to delete this blog post" });
-});
+);
 
 module.exports = blogRouter;
